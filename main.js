@@ -4,6 +4,10 @@ function createEtchRow(numberColumns) {
   for (let col = 0; col < numberColumns; col++) {
     let pixel = document.createElement("div");
     pixel.className = "etch-pixel";
+    pixel.addEventListener("mouseover", (e) => {
+      console.log(e);
+      e.target.style.backgroundColor = "black";
+    });
     etchRow.appendChild(pixel);
   }
   return etchRow;
