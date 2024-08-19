@@ -1,4 +1,5 @@
-let mouseDown = false;
+let mouseDown = 0;
+let colors = [0, 0, 0];
 
 function createEtchRow(numberColumns) {
   let etchRow = document.createElement("div");
@@ -7,13 +8,27 @@ function createEtchRow(numberColumns) {
     let pixel = document.createElement("div");
     pixel.className = "etch-pixel";
     pixel.addEventListener("mouseover", (e) => {
-      if (mouseDown) {
-        e.target.style.backgroundColor = "black";
+      changeColor();
+      if (mouseDown > 0) {
+        e.target.style.backgroundColor = `rgb(${colors[0]},${colors[1]}, ${colors[2]})`;
       }
+    });
+    pixel.addEventListener("click", (e) => {
+      changeColor();
+      e.target.style.backgroundColor = `rgb(${colors[0]},${colors[1]}, ${colors[2]})`;
     });
     etchRow.appendChild(pixel);
   }
   return etchRow;
+}
+
+function changeColor() {
+  colors[0] += 1;
+  colors[1] += Math.floor(colors[0] / 256);
+  colors[0] = colors[0] % 256;
+  colors[2] += Math.floor(colors[1] / 256);
+  colors[1] = colors[1] % 256;
+  colors[2] = colors[2] % 256;
 }
 
 function createGrid(numberRows, numberColumns) {
@@ -27,17 +42,29 @@ function createGrid(numberRows, numberColumns) {
 }
 
 function checkMouseDown() {
-  let etchContainer = document.querySelector(".etch-container");
-  etchContainer.addEventListener("mousedown", () => {
-    mouseDown = true;
+  let body = document.querySelector("body");
+  body.addEventListener("mousedown", () => {
+    mouseDown++;
   });
-  etchContainer.addEventListener("mouseup", () => {
-    mouseDown = false;
+  body.addEventListener("mouseup", () => {
+    mouseDown--;
   });
-  etchContainer.addEventListener("mouseleave", () => {
-    mouseDown = false;
+  body.addEventListener("mouseleave", () => {
+    mouseDown = 0;
   });
 }
 
-createGrid(64, 64);
-checkMouseDown();
+function main() {
+  document.querySelector("button").addEventListener("click", () => {
+    let sizeInput = document.querySelector("#size-input");
+    let size = parseInt(sizeInput.value);
+    size = Math.min(size, 64);
+    size = Math.max(size, 1);
+    sizeInput.value = size;
+    createGrid(size, size);
+  });
+  createGrid(16, 16);
+  checkMouseDown();
+}
+
+main();
